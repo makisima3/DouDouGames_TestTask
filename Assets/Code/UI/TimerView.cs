@@ -1,5 +1,6 @@
 ﻿using System;
 using Code.Core;
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,8 @@ namespace Code.UI
 {
     public class TimerView : MonoBehaviour
     {
+        
+        [SerializeField] private TimerButtonHolder buttonHolder;
         [SerializeField] private TMP_Text timerTextPlace;
         [SerializeField] private HoldButton addTimeButton;
         [SerializeField] private HoldButton subTimeButton;
@@ -16,8 +19,12 @@ namespace Code.UI
         [SerializeField] private Button stopButton;
         [SerializeField] private Button hideButton;
 
+        [SerializeField] private float moveDuration = 0.5f;
+        [SerializeField] private RectTransform targetContainer;
+        [SerializeField] private RectTransform shownPoint;
+        [SerializeField] private RectTransform hiddenPoint;
+
         private Timer _timer;
-        private bool _isShowing;
         private void Awake()
         {
             playButton.gameObject.SetActive(true);
@@ -44,13 +51,13 @@ namespace Code.UI
                 pauseButton.gameObject.SetActive(false);
             });
             hideButton.onClick.AddListener(Hide);
+            
+            gameObject.SetActive(false);
+            targetContainer.position = hiddenPoint.position;
         }
 
         private void Update()
         {
-            if(!_isShowing)
-                return;
-            
             pauseButton.gameObject.SetActive(!_timer.TimerState.IsOnPause);
             playButton.gameObject.SetActive(_timer.TimerState.IsOnPause);
            timerTextPlace.text = _timer.RemainingTime.ToString(@"hh\:mm\:ss");
@@ -66,14 +73,23 @@ namespace Code.UI
 
         public void Show()
         {
-            _isShowing = true;
             gameObject.SetActive(true);
+            
+            targetContainer.DOMove(shownPoint.position, moveDuration)
+                .SetEase(Ease.OutBack);
         }
 
         public void Hide()
         {
-            _isShowing = false;
-            gameObject.SetActive(false);
+            targetContainer.DOMove(hiddenPoint.position, moveDuration)
+                .SetEase(Ease.InBack)
+                .OnComplete(() =>
+                {
+                    gameObject.SetActive(false);
+                    buttonHolder.Show();
+                });
+            
+            
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Code.Core.StorageObjects;
@@ -48,6 +49,15 @@ namespace Code.Core
                 var timer = timerHolder.CreateTimer(timerState);
                 timerButtonHolder.CreateButton(timer);
             }
+
+            StartCoroutine(ShowDelay());
+        }
+
+        //fix unity bugs...
+        private IEnumerator ShowDelay()
+        {
+            yield return new WaitForEndOfFrame();
+            timerButtonHolder.Show();
         }
     }
 }
