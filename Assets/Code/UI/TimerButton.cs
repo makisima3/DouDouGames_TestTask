@@ -40,6 +40,11 @@ namespace Code.UI
             gameObject.SetActive(true);
         }
 
+        private void Update()
+        {
+            showButton.image.color = _timer.TimerState.IsOnPause ? Color.white : Color.grey;
+        }
+
         public void Show(float moveDelay, float timeToMove, Action onComplete = null)
         {
             gameObject.SetActive(true);
